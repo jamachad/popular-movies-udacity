@@ -1,12 +1,16 @@
 package com.udacity.android.popularmovies.data;
 
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.OneToMany;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.annotation.Unique;
+import com.raizlabs.android.dbflow.sql.language.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import java.sql.Date;
+import java.util.List;
 
 /**
  * Created by jamachad on 06/10/2016.
@@ -40,6 +44,26 @@ public class Movie extends BaseModel {
 
     @Column
     Date releaseDate;
+
+    List<Review> reviews;
+
+    List<Trailer> trailers;
+
+    @OneToMany(methods = {OneToMany.Method.ALL}, variableName = "reviews")
+    public List<Review> getReviews() {
+        if(reviews == null){
+            reviews = new Select().from(Review.class).where(Condition.column(Review_Table.movie_id.getNameAlias()).eq(this.id)).queryList();
+        }
+        return reviews;
+    }
+
+    @OneToMany(methods = {OneToMany.Method.ALL}, variableName = "trailers")
+    public List<Trailer> getTrailers(){
+        if (trailers == null){
+            //trailers = new Select().from(Trailer.class).where(Condition.column(Trailer_Table.))
+        }
+        return trailers;
+    }
 
     public int getId() {
         return id;
