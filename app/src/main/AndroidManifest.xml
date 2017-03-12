@@ -40,7 +40,7 @@
         <provider
             android:authorities="com.udacity.android.popularmovies.provider"
             android:exported="false"
-            android:name="com.udacity.android.popularmovies.data.Database_Provider" />
+            android:name="com.udacity.android.popularmovies.Model.Database_Provider" />
     </application>
 
 </manifest>

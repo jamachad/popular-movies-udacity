@@ -1,4 +1,4 @@
-package com.udacity.android.popularmovies.data;
+package com.udacity.android.popularmovies.Model;
 
 import android.net.Uri;
 

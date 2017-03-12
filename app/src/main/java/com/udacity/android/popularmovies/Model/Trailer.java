@@ -1,8 +1,8 @@
-package com.udacity.android.popularmovies.data;
+package com.udacity.android.popularmovies.Model;
 
+import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
-import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
@@ -12,20 +12,29 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
  */
 
 @Table(database = Database.class)
-//@Parcel(analyze = {Review.class})
-public class Review extends BaseModel {
+//@Parcel(analyze = {Trailer.class})
+public class Trailer extends BaseModel{
 
+    @Expose
     @Column
     @PrimaryKey
-    int id;
+    public int id;
 
+    @Expose
     @Column
-    String author;
+    public String name;
 
+    @Expose
     @Column
-    String content;
+    public String size;
+
+    @Expose
+    @Column
+    public String key;
 
     @Column
     @ForeignKey(saveForeignKeyModel = false)
     Movie movie;
 }
+
+

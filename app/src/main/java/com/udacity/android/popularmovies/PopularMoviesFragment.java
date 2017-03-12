@@ -248,9 +248,6 @@ Log.i(LOG_TAG, "URL = " + url.toString());
                     }
                 }
             }
-
-
-
             return new String[0];
         }
 
