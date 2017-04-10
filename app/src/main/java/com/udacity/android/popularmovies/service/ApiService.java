@@ -1,8 +1,8 @@
-package com.udacity.android.popularmovies.Service;
+package com.udacity.android.popularmovies.service;
 
-import com.udacity.android.popularmovies.Model.MovieResponse;
-import com.udacity.android.popularmovies.Model.ReviewResponse;
-import com.udacity.android.popularmovies.Model.TrailerResponse;
+import com.udacity.android.popularmovies.model.MovieResponse;
+import com.udacity.android.popularmovies.model.ReviewResponse;
+import com.udacity.android.popularmovies.model.TrailerResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

@@ -3,20 +3,17 @@
     android:layout_height="match_parent"
     tools:context="com.udacity.android.popularmovies.PopularMoviesFragment">
 
-    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/gridview"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view_popular_movies_fragment"
+        android:scrollbars="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:numColumns="2"
-        android:verticalSpacing="10dp"
-        android:horizontalSpacing="10dp"
-        android:stretchMode="columnWidth"
-        android:clickable="true"
-        />
+        android:layout_height="match_parent"
+        android:background="#EEEEEE"/>
+
 <ProgressBar
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:id="@+id/progressBar_main"
     android:visibility="invisible"
-    android:layout_gravity="center"/>
+    android:layout_gravity="center" />
 </FrameLayout>

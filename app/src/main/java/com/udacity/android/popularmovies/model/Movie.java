@@ -1,29 +1,36 @@
-package com.udacity.android.popularmovies.Model;
+package com.udacity.android.popularmovies.model;
+
+import android.database.Cursor;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.ConflictAction;
 import com.raizlabs.android.dbflow.annotation.OneToMany;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.annotation.Unique;
 import com.raizlabs.android.dbflow.sql.language.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import java.sql.Date;
+import org.parceler.Parcel;
+
 import java.util.List;
 
 /**
  * Created by jamachad on 06/10/2016.
  */
 
-@Table(database = Database.class)
-//@Parcel(analyze = {Movie.class})
+@Table(database = Database.class, insertConflict = ConflictAction.IGNORE)
+@Parcel(analyze = {Movie.class})
 public class Movie extends BaseModel {
+
+    public Movie() {}
 
     @Expose
     @Column
-    private String posterPath;
+    @SerializedName("poster_path")
+    public String posterPath;
 
     @Expose
     @Column
@@ -35,19 +42,22 @@ public class Movie extends BaseModel {
 
     @Expose
     @Column
+    @SerializedName("release_date")
     public String releaseDate;
 
     @Expose
     @Column
     @PrimaryKey
-    private Integer id;
+    public Integer id;
 
     @Expose
     @Column
+    @SerializedName("original_title")
     public String originalTitle;
 
     @Expose
     @Column
+    @SerializedName("original_language")
     public String originalLanguage;
 
     @Expose
@@ -56,6 +66,7 @@ public class Movie extends BaseModel {
 
     @Expose
     @Column
+    @SerializedName("backdrop_path")
     public String backdropPath;
 
     @Expose
@@ -64,6 +75,7 @@ public class Movie extends BaseModel {
 
     @Expose
     @Column
+    @SerializedName("vote_count")
     public Integer voteCount;
 
     @Expose
@@ -72,11 +84,22 @@ public class Movie extends BaseModel {
 
     @Expose
     @Column
+    @SerializedName("vote_average")
     public Double voteAverage;
 
     @Expose
     @Column
-    public Boolean favoriteMovie;
+    @SerializedName("favorite_movie")
+    public int favoriteMovie;
+
+    /*
+    - Popular
+    - Top_rated
+     */
+    @Expose
+    @Column
+    public String movie_order;
+
 
     List<Review> reviews;
 
@@ -98,6 +121,39 @@ public class Movie extends BaseModel {
                     .eq(this.id)).queryList();
         }
         return trailers;
+    }
+
+
+
+    public static Movie populateMovie(Cursor cursor, int index){
+        cursor.moveToPosition(index);
+        String imgUrl = cursor.getString(cursor.getColumnIndex(Movie_Table.posterPath.getNameAlias().getNameAsKey()));
+        String movieTitle = cursor.getString(cursor.getColumnIndex(Movie_Table.title.getNameAlias().getNameAsKey()));
+        Double voteAverage = cursor.getDouble(cursor.getColumnIndex(Movie_Table.voteAverage.getNameAlias().getNameAsKey()));
+        String overView = cursor.getString(cursor.getColumnIndex(Movie_Table.overview.getNameAlias().getNameAsKey()));
+        String releaseDate = cursor.getString(cursor.getColumnIndex(Movie_Table.releaseDate.getNameAlias().getNameAsKey()));
+        int id = cursor.getInt(cursor.getColumnIndex(Movie_Table.id.getNameAlias().getNameAsKey()));
+        int isFavorite = cursor.getInt(cursor.getColumnIndex(Movie_Table.favoriteMovie.getNameAlias().getNameAsKey()));
+        return new Movie(imgUrl, overView, releaseDate, id, movieTitle, voteAverage, isFavorite);
+    }
+
+    public Movie(String posterPath, String overview, String releaseDate, Integer id, String title, Double voteAverage, int favoriteMovie) {
+        this.posterPath = posterPath;
+        this.overview = overview;
+        this.releaseDate = releaseDate;
+        this.id = id;
+        this.title = title;
+        this.voteAverage = voteAverage;
+        this.favoriteMovie = favoriteMovie;
+    }
+
+
+    public String getMovie_order() {
+        return movie_order;
+    }
+
+    public void setMovie_order(String movie_type) {
+        this.movie_order = movie_order;
     }
 
     public int getId() {
@@ -140,11 +196,11 @@ public class Movie extends BaseModel {
         this.voteAverage = voteAverage;
     }
 
-    public Boolean getFavoriteMovie() {
+    public int getFavoriteMovie() {
         return favoriteMovie;
     }
 
-    public void setFavoriteMovie(Boolean favoriteMovie) {
+    public void setFavoriteMovie(int favoriteMovie) {
         this.favoriteMovie = favoriteMovie;
     }
 

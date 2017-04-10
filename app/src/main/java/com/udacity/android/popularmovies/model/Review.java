@@ -1,4 +1,4 @@
-package com.udacity.android.popularmovies.Model;
+package com.udacity.android.popularmovies.model;
 
 import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
@@ -7,12 +7,14 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import org.parceler.Parcel;
+
 /**
  * Created by jamachad on 14/10/2016.
  */
 
 @Table(database = Database.class)
-//@Parcel(analyze = {Review.class})
+@Parcel(analyze = {Review.class})
 public class Review extends BaseModel {
 
     @Expose
@@ -33,7 +35,7 @@ public class Review extends BaseModel {
     public String url;
 
     @Column
-    @ForeignKey(saveForeignKeyModel = false)
+    @ForeignKey(stubbedRelationship = true, saveForeignKeyModel = false)
     Movie movie;
 
     public String getId() {
@@ -66,6 +68,14 @@ public class Review extends BaseModel {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Movie getMovie() {
+        return movie;
+    }
+
+    public void setMovie(Movie movie) {
+        this.movie = movie;
     }
 }
 

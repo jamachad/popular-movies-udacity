@@ -1,4 +1,4 @@
-package com.udacity.android.popularmovies.Model;
+package com.udacity.android.popularmovies.model;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -9,15 +9,15 @@ import java.util.List;
  */
 
 public class TrailerResponse {
-    private Integer id;
+    private String id;
     @SerializedName("results")
     private List<Trailer> trailers = null;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.youtube.player.YouTubeThumbnailView
+            android:id="@+id/youtube_thumbnail"
+            android:layout_width="0dp"
+            android:layout_height="190dp"
+            android:adjustViewBounds="false"
+            android:scaleType="fitXY"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@android:drawable/ic_media_play"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1" />
+
+        <ImageView
+            android:id="@+id/posterDetail"
+            android:layout_width="91dp"
+            android:layout_height="126dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="138dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/textViewMovieTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="monospace"
+            android:text="Movie Title"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            app:layout_constraintLeft_toRightOf="@+id/posterDetail"
+            app:layout_constraintTop_toBottomOf="@+id/youtube_thumbnail"
+            tools:text="Movie Title" />
+
+        <TextView
+            android:id="@+id/releaseDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="serif-monospace"
+            android:text="29-10-2017"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            app:layout_constraintLeft_toRightOf="@+id/posterDetail"
+            app:layout_constraintTop_toBottomOf="@+id/textViewMovieTitle"
+            tools:text="29-10-2017" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="99dp"
+            android:layout_height="91dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="7dp"
+            android:layout_marginTop="33dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/floatingActionButton"
+            app:srcCompat="@drawable/shape_rectangle_stroke" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Rating"
+            app:layout_constraintLeft_toLeftOf="@+id/imageView3"
+            app:layout_constraintRight_toRightOf="@+id/imageView3"
+            app:layout_constraintTop_toTopOf="@+id/imageView3" />
+
+        <TextView
+            android:id="@+id/userRatingDetail"
+            android:layout_width="45dp"
+            android:layout_height="35dp"
+            android:layout_marginBottom="22dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="26dp"
+            android:gravity="center_vertical"
+            android:text="TextView"
+            android:textAlignment="center"
+            android:textSize="28sp"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView3"
+            app:layout_constraintLeft_toLeftOf="@+id/textView4"
+            app:layout_constraintRight_toRightOf="@+id/textView4"
+            app:layout_constraintTop_toTopOf="@+id/textView4"
+            app:layout_constraintVertical_bias="0.111"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintTop_creator="1"
+            tools:text="8.9" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="166dp"
+            android:clickable="true"
+            app:fabSize="mini"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_favorite_black_24dp"
+            tools:layout_constraintTop_creator="1" />
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardView3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView3"
+            app:layout_constraintVertical_bias="0.072"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:text="Overview"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textSize="20sp"
+                    tools:text="Overview" />
+
+                <TextView
+                    android:id="@+id/descriptionDetail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:text="Movie Overview"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Movie Overview" />
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintLeft_toLeftOf="@+id/cardView3"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardView3"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:text="Trailers"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    tools:text="Trailers" />
+
+                <org.lucasr.twowayview.TwoWayView
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:tools="http://schemas.android.com/tools"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/trailerItems"
+                    style="@style/TwoWayView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:drawSelectorOnTop="false"
+                    tools:context=".DetailActivity" />
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>
