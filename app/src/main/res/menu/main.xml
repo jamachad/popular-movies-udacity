@@ -9,7 +9,7 @@
         <menu>
             <item android:id="@+id/sort_by_popular_movies" android:title="@string/pref_popular_label_order"/>
             <item android:id="@+id/sort_by_toprated_movies" android:title="@string/pref_toprated_label_order" />
-            <item android:id="@+id/sort_by_favorites" android:title="@string/favorites"/>
+            <item android:id="@+id/sort_by_favorites" android:title="@string/pref_favorites_order_label"/>
         </menu>
     </item>
 </menu>

@@ -25,8 +25,15 @@ public class SyncIntentService extends IntentService{
     protected void onHandleIntent(@Nullable Intent intent) {
         try {
             EventBus.getDefault().post(new LoadedMoviesEvent(View.VISIBLE));
-            SyncTask.syncMovies(this, getString(R.string.pref_popular_order));
-            SyncTask.syncMovies(this, getString(R.string.pref_top_rated_order));
+            Boolean gotPopular = false;
+            Boolean gotTopRated = false;
+            while (gotPopular == false){
+                gotPopular = SyncTask.syncMovies(this, getString(R.string.pref_popular_order));
+            }
+
+            while (gotTopRated == false){
+                gotTopRated = SyncTask.syncMovies(this, getString(R.string.pref_top_rated_order));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

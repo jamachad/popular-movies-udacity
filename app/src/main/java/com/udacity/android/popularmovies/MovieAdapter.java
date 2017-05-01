@@ -61,12 +61,30 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder>{
         mOnClickListener = listener;
     }
 
+
+
     @Override
     public MovieViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         int layoutIdForListItem = R.layout.grid_item_popular_movies;
+        int layoutIdForHeaderListItem = R.layout.grid_item_popular_movies_header;
         boolean shouldAttachToParentImmediately = false;
+        View view;
 
-        View view  = LayoutInflater.from(mContext).inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
+        switch (viewType){
+            case 1:
+                view  = LayoutInflater.from(mContext).inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
+                break;
+
+            case 2:
+                view  = LayoutInflater.from(mContext).inflate(layoutIdForHeaderListItem, viewGroup, shouldAttachToParentImmediately);
+                break;
+
+            default:
+                view  = LayoutInflater.from(mContext).inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
+                break;
+        }
+
+
         //view.setFocusable(true);
         return new MovieViewHolder(view);
     }
@@ -77,15 +95,31 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder>{
         mCursor.moveToPosition(position);
         String imgUrl = "http://image.tmdb.org/t/p/w780"+mCursor.getString(mCursor.getColumnIndex(Movie_Table.posterPath.getNameAlias().getNameAsKey()));
         String movieTitle = mCursor.getString(mCursor.getColumnIndex(Movie_Table.title.getNameAlias().getNameAsKey()));
+        String movieOverview = mCursor.getString(mCursor.getColumnIndex(Movie_Table.overview.getNameAlias().getNameAsKey()));
         Double voteAverage = mCursor.getDouble(mCursor.getColumnIndex(Movie_Table.voteAverage.getNameAlias().getNameAsKey()));
+
+        switch (getItemViewType(position)){
+            case 1:
+                //holder.movieViewCountTextView.setText(mContext.getString(R.string.Rating) + voteAverage.toString());
+                holder.movieViewCountTextView.setText(voteAverage.toString());
+                holder.movieTitleTextView.setText(movieTitle);
+                break;
+
+            case 2:
+                holder.movieTitleTextView.setText(movieTitle);
+                holder.moviewOverview.setText(movieOverview);
+                break;
+
+            default:
+                break;
+        }
+
         //setRelativeLayoutBackground(holder.movieRelativeLayout);
         //Picasso.with(mContext).load("http://image.tmdb.org/t/p/w780"+imgUrl).into(holder.moviePosterImageView);
-        holder.movieViewCountTextView.setText(mContext.getString(R.string.Rating) + voteAverage.toString());
-        holder.movieTitleTextView.setText(movieTitle);
-        loadImage(holder, imgUrl);
+        loadImage(holder, imgUrl, getItemViewType(position));
     }
 
-    public void loadImage(final MovieViewHolder viewHolder, String imgUrl){
+    public void loadImage(final MovieViewHolder viewHolder, String imgUrl, final int itemViewType){
         Picasso.with(mContext)
                 .load(imgUrl)
                 .transform(PaletteTransformation.instance())
@@ -93,15 +127,23 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder>{
                     @Override
                     public void onSuccess() {
                         Bitmap bitmap = ((BitmapDrawable) viewHolder.moviePosterImageView.getDrawable()).getBitmap();
-                        if (bitmap != null) {
+                        if (bitmap != null && itemViewType == 3) {
                             Palette palette = Palette.from(bitmap).generate();
                             Palette.Swatch swatchVibrant = palette.getVibrantSwatch();
                             Palette.Swatch swatchMuted = palette.getVibrantSwatch();
                             Palette.Swatch swatchDominant = palette.getDominantSwatch();
-                            if (swatchDominant != null) {
-                                viewHolder.movieRelativeLayout.setBackgroundColor(swatchDominant.getRgb());
-                                viewHolder.movieTitleTextView.setTextColor(swatchDominant.getTitleTextColor());
-                                viewHolder.movieViewCountTextView.setTextColor(swatchDominant.getBodyTextColor());
+                            Palette.Swatch lightVibrantSwatch = palette.getLightVibrantSwatch();
+                            if(lightVibrantSwatch != null){
+                                viewHolder.movieRelativeLayout.setBackgroundColor(lightVibrantSwatch.getRgb());
+                                viewHolder.movieTitleTextView.setTextColor(lightVibrantSwatch.getTitleTextColor());
+                                viewHolder.movieViewCountTextView.setTextColor(lightVibrantSwatch.getBodyTextColor());
+
+                            } else if (swatchDominant != null) {
+                                    viewHolder.movieRelativeLayout.setBackgroundColor(swatchDominant.getRgb());
+                                    viewHolder.movieTitleTextView.setTextColor(swatchDominant.getTitleTextColor());
+                                    viewHolder.movieViewCountTextView.setTextColor(swatchDominant.getBodyTextColor());
+
+
                             } else if (swatchDominant != null) {
                                 viewHolder.movieRelativeLayout.setBackgroundColor(swatchDominant.getRgb());
                                 viewHolder.movieTitleTextView.setTextColor(swatchDominant.getTitleTextColor());
@@ -138,10 +180,20 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder>{
         notifyDataSetChanged();
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if (position % 3 == 0 || position % 3 == 1) {
+            return 1;
+        } else {
+            return 2;
+        }
+    }
+
     class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
          ImageView moviePosterImageView;
          TextView movieTitleTextView;
          TextView movieViewCountTextView;
+        TextView moviewOverview;
          RelativeLayout movieRelativeLayout;
         CardView movieCardView;
         public MovieViewHolder(View itemView) {
@@ -151,6 +203,7 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder>{
             movieViewCountTextView = (TextView) itemView.findViewById(R.id.movie_vote_count);
             movieRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.grid_item_relative_layout);
             movieCardView = (CardView) itemView.findViewById(R.id.card_view_popular_movies);
+            moviewOverview = (TextView) itemView.findViewById(R.id.movieOverview);
             itemView.setOnClickListener(this);
         }
 

@@ -5,10 +5,12 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_popular_movies_fragment"
-        android:scrollbars="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#EEEEEE"/>
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="4dp"
+        android:background="#EEEEEE"
+        android:scrollbars="vertical" />
 
 <ProgressBar
     android:layout_width="wrap_content"

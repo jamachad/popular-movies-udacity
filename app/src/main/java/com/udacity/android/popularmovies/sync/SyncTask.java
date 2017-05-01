@@ -34,7 +34,7 @@ import retrofit2.Response;
 public class SyncTask {
     static final String LOG_TAG = SyncTask.class.getSimpleName();
 
-    synchronized public static void syncMovies(final Context context, String movieOrder) throws IOException {
+    synchronized public static boolean syncMovies(final Context context, String movieOrder) throws IOException {
         final RestClient restClient = new RestClient();
         Response<MovieResponse> movieResponse = null;
         if (movieOrder.equals(context.getString(R.string.pref_popular_order))) {
@@ -42,22 +42,27 @@ public class SyncTask {
         } else if (movieOrder.equals(context.getString(R.string.pref_top_rated_order))) {
             movieResponse = restClient.getApiService().loadTopRatedMovies(RestClient.API_KEY).execute();
         }
-        List<Movie> movies = movieResponse.body().getMovies();
-        Log.d(LOG_TAG, "Number of movies received: " + movies.size());
-        for (Movie movie : movies
-                ) {
-            Movie returnedMovie = new Select().from(Movie.class)
-                    .where(Movie_Table.id.eq(movie.id)).querySingle();
-            movie.movie_order = movieOrder;
-            if(returnedMovie != null){
-                movie.setFavoriteMovie(returnedMovie.getFavoriteMovie());
-                if(!returnedMovie.movie_order.equals(movie.movie_order)){
-                    movie.movie_order = context.getString(R.string.PopularAndTopRated_Movie);
+        if(movieResponse.body() != null) {
+            List<Movie> movies = movieResponse.body().getMovies();
+            Log.d(LOG_TAG, "Number of movies received: " + movies.size());
+            for (Movie movie : movies
+                    ) {
+                Movie returnedMovie = new Select().from(Movie.class)
+                        .where(Movie_Table.id.eq(movie.id)).querySingle();
+                movie.movie_order = movieOrder;
+                if (returnedMovie != null) {
+                    movie.setFavoriteMovie(returnedMovie.getFavoriteMovie());
+                    if (!returnedMovie.movie_order.equals(movie.movie_order)) {
+                        movie.movie_order = context.getString(R.string.PopularAndTopRated_Movie);
+                    }
                 }
+                movie.save();
+                syncTrailer(context, movie, restClient);
+                syncReviews(context, movie, restClient);
             }
-            movie.save();
-            syncTrailer(context, movie, restClient);
-            syncReviews(context, movie, restClient);
+            return true;
+        }else{
+            return false;
         }
     }
 

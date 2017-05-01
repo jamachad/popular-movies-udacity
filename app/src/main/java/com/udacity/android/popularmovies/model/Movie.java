@@ -132,12 +132,13 @@ public class Movie extends BaseModel {
         Double voteAverage = cursor.getDouble(cursor.getColumnIndex(Movie_Table.voteAverage.getNameAlias().getNameAsKey()));
         String overView = cursor.getString(cursor.getColumnIndex(Movie_Table.overview.getNameAlias().getNameAsKey()));
         String releaseDate = cursor.getString(cursor.getColumnIndex(Movie_Table.releaseDate.getNameAlias().getNameAsKey()));
+        String backdropPath = cursor.getString(cursor.getColumnIndex(Movie_Table.backdropPath.getNameAlias().getNameAsKey()));
         int id = cursor.getInt(cursor.getColumnIndex(Movie_Table.id.getNameAlias().getNameAsKey()));
         int isFavorite = cursor.getInt(cursor.getColumnIndex(Movie_Table.favoriteMovie.getNameAlias().getNameAsKey()));
-        return new Movie(imgUrl, overView, releaseDate, id, movieTitle, voteAverage, isFavorite);
+        return new Movie(imgUrl, overView, releaseDate, id, movieTitle, voteAverage, isFavorite, backdropPath);
     }
 
-    public Movie(String posterPath, String overview, String releaseDate, Integer id, String title, Double voteAverage, int favoriteMovie) {
+    public Movie(String posterPath, String overview, String releaseDate, Integer id, String title, Double voteAverage, int favoriteMovie, String backdropPath) {
         this.posterPath = posterPath;
         this.overview = overview;
         this.releaseDate = releaseDate;
@@ -145,6 +146,7 @@ public class Movie extends BaseModel {
         this.title = title;
         this.voteAverage = voteAverage;
         this.favoriteMovie = favoriteMovie;
+        this.backdropPath = backdropPath;
     }
 
 

@@ -45,6 +45,13 @@
         <service android:name=".sync.SyncIntentService" android:exported="false">
 
         </service>
+
+        <receiver android:name=".NetworkReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
