@@ -10,13 +10,16 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -25,6 +28,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.EventLog;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -42,6 +46,7 @@ import com.udacity.android.popularmovies.model.Movie;
 import com.udacity.android.popularmovies.model.Movie_Table;
 import com.udacity.android.popularmovies.sync.SyncIntentService;
 import com.udacity.android.popularmovies.sync.SyncUtils;
+import com.udacity.android.popularmovies.utilities.FirstTimeLoad;
 import com.udacity.android.popularmovies.utilities.InternetChangeEvent;
 import com.udacity.android.popularmovies.utilities.LoadedMoviesEvent;
 import com.udacity.android.popularmovies.utilities.MoviesPreferences;
@@ -66,6 +71,15 @@ public class PopularMoviesFragment extends Fragment implements LoaderManager.Loa
     private static final String BUNDLE_RECYCLER_LAYOUT = "PopularMoviesFragment.recycler.layout";
     ProgressDialog progressDialog;
     Parcelable mSavedRecyclerLayoutState;
+    public static Boolean fabPressed = false;
+    private NetworkReceiver mNetworkReceiver;
+
+    public static void setFabPressed(boolean wasFabPressed){
+        fabPressed = wasFabPressed;
+    }
+
+    private Callback listener;
+
 
     public static final int ID_MOVIE_LOADER = 83;
 
@@ -77,20 +91,31 @@ public class PopularMoviesFragment extends Fragment implements LoaderManager.Loa
         // Required empty public constructor
     }
 
+    public interface Callback{
+        public  void onMovieItemSelected(Movie movieClicked);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof Callback)
+            listener = (Callback) context;
+        else
+            throw new ClassCastException(context.toString() + " must implement PopularMoviesFragment.OnItemSelectedListener.");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLoadedMoviesEvent(LoadedMoviesEvent event){
-       // Toast.makeText(getActivity(), "finished", Toast.LENGTH_SHORT).show();
-
         if(event.message == View.INVISIBLE)
                 progressDialog.dismiss();
-
-
-            //progressBar.setVisibility(View.INVISIBLE);
         else
             progressDialog = ProgressDialog.show(getActivity(), "Please wait", "Downloading data for the first time", false,false);
-            //progressBar.setVisibility(View.VISIBLE);
-
-
 
         getActivity().getSupportLoaderManager().restartLoader(ID_MOVIE_LOADER,null,this);
     }
@@ -109,30 +134,33 @@ public class PopularMoviesFragment extends Fragment implements LoaderManager.Loa
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.sort_by_popular_movies:
-                //Cursor
                 MoviesPreferences.setMovieOrder(getActivity(), getString(R.string.pref_popular_order));
+                if(getResources().getBoolean(R.bool.twoPaneMode)) mSavedRecyclerLayoutState = null;
                 getActivity().getSupportLoaderManager().restartLoader(ID_MOVIE_LOADER,null,this);
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.pref_popular_label_order));
-                //Snackbar.make(getView(), R.string.no_internet, Snackbar.LENGTH_LONG).show();
+                mMoviesList.smoothScrollToPosition(0);
+
                 break;
 
             case R.id.sort_by_toprated_movies:
+                if(getResources().getBoolean(R.bool.twoPaneMode)) mSavedRecyclerLayoutState = null;
                 MoviesPreferences.setMovieOrder(getActivity(), getString(R.string.pref_top_rated_order));
                 getActivity().getSupportLoaderManager().restartLoader(ID_MOVIE_LOADER,null,this);
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.pref_toprated_label_order));
+                mMoviesList.smoothScrollToPosition(0);
                 break;
 
             case R.id.sort_by_favorites:
                 MoviesPreferences.setMovieOrder(getActivity(), getString(R.string.pref_favorites_order));
+                if(getResources().getBoolean(R.bool.twoPaneMode)) mSavedRecyclerLayoutState = null;
                 getActivity().getSupportLoaderManager().restartLoader(ID_MOVIE_LOADER,null,this);
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.pref_favorites_order_label));
+                mMoviesList.smoothScrollToPosition(0);
                 break;
 
             default:
                 break;
         }
-        //Snackbar.make(getView(), R.string.no_internet, Snackbar.LENGTH_LONG).show();
-
 
         return super.onOptionsItemSelected(item);
     }
@@ -155,26 +183,35 @@ public class PopularMoviesFragment extends Fragment implements LoaderManager.Loa
         }
     }
 
+
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, ((GridLayoutManager) mMoviesList.getLayoutManager()).onSaveInstanceState());
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_popular_movies, container, false);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-            getActivity().registerReceiver(new NetworkReceiver(), intentFilter);
+            mNetworkReceiver = new NetworkReceiver();
+            getActivity().registerReceiver(mNetworkReceiver, intentFilter);
+        }else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N){
+            ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            if (activeNetwork != null && activeNetwork.isConnected() && activeNetwork.isAvailable()) {
+                updateMovies();
+            } else {
+                Snackbar.make(getView(), R.string.no_internet, Snackbar.LENGTH_LONG).show();
+            }
         }
 
         setTitle();
@@ -190,10 +227,10 @@ public class PopularMoviesFragment extends Fragment implements LoaderManager.Loa
             @Override
             public int getSpanSize(int position) {
                 if (position % 3 == 0 || position % 3 == 1) {
-                    Log.e("TAG", "Position: " + position +" position % 3= " + position % 3 + " return 1");
+                  //  Log.e("TAG", "Position: " + position +" position % 3= " + position % 3 + " return 1");
                     return 1;
                 } else {
-                    Log.e("TAG", "Position: " + position +" position % 3= " + position % 3 + " return 2");
+                  //  Log.e("TAG", "Position: " + position +" position % 3= " + position % 3 + " return 2");
                     return 2;
                 }
             }
@@ -206,11 +243,6 @@ public class PopularMoviesFragment extends Fragment implements LoaderManager.Loa
         mMoviesAdapter = new MovieAdapter(getActivity(), this);
         mMoviesList.setAdapter(mMoviesAdapter);
         getActivity().getSupportLoaderManager().initLoader(ID_MOVIE_LOADER, null, this);
-        if(savedInstanceState != null){
-
-        }else{
-
-        }
 
 
         return rootView;
@@ -230,8 +262,22 @@ public class PopularMoviesFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public void onStop() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            try {
+                getActivity().unregisterReceiver(mNetworkReceiver);
+            }catch (IllegalArgumentException ex){
+                ex.printStackTrace();
+            }
+        }
         super.onStop();
         EventBus.getDefault().unregister(this);
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
     }
 
     private void setTitle(){
@@ -289,15 +335,25 @@ public class PopularMoviesFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        final Cursor defaultRecordToLoad = data;
         mMoviesAdapter.swapCursor(data);
         if(mPosition==RecyclerView.NO_POSITION) mPosition = 0;
-        if(mSavedRecyclerLayoutState != null){
+        if(mSavedRecyclerLayoutState != null && getResources().getBoolean(R.bool.twoPaneMode) == false){
             mMoviesList.getLayoutManager().onRestoreInstanceState(mSavedRecyclerLayoutState);
-        }else{
-            mMoviesList.smoothScrollToPosition(mPosition);
-        }
 
-        //if(data.getCount() != 0)
+        }else{
+           // mMoviesList.smoothScrollToPosition(mPosition);
+        }
+        if(mPosition == 0 && mSavedRecyclerLayoutState == null && fabPressed == false && data.getCount() > 0) {
+            new Handler().post(new Runnable() {
+                public void run() {
+                    Movie firstMovie = Movie.populateMovie(defaultRecordToLoad, 0);
+                    EventBus.getDefault().post(new FirstTimeLoad(firstMovie));
+                }
+            });
+        }
+        setFabPressed(false);
+
     }
 
     @Override
@@ -307,9 +363,7 @@ public class PopularMoviesFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public void onListItemClick(Movie clickedMovie) {
-        Intent intentDetailMovie = new Intent(getActivity(), DetailActivity.class).putExtra("movie", Parcels.wrap(clickedMovie));
-        startActivity(intentDetailMovie);
-        //Toast.makeText(getActivity(), "Movie clicked", Toast.LENGTH_SHORT).show();
+        listener.onMovieItemSelected(clickedMovie);
     }
 
 

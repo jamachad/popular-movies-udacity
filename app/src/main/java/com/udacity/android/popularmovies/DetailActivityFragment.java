@@ -1,6 +1,7 @@
 package com.udacity.android.popularmovies;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Rect;
@@ -23,6 +24,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 
 import com.raizlabs.android.dbflow.sql.language.SQLite;
@@ -44,10 +46,13 @@ public class DetailActivityFragment extends Fragment{
     private Movie mMovie;
     private static final String LOG_DETAIL_FRAGMENT = DetailActivityFragment.class.getSimpleName();
     private static final String BUNDLE_RECYCLER_TRAILERS_LAYOUT = "DetailActivityFragment.recycler.trailers.layout";
+    private static final String BUNDLE_RECYCLER_REVIEWS_LAYOUT = "DetailActivityFragment.recycler.reviews.layout";
+
 
     private ShareActionProvider mShareActionProvider;
 
     MovieDetailFragmentBinding mBinding;
+
 
     public DetailActivityFragment() {
     }
@@ -55,17 +60,18 @@ public class DetailActivityFragment extends Fragment{
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        outState.putParcelable(BUNDLE_RECYCLER_TRAILERS_LAYOUT, mBinding.recyclerViewMoreTrailers.getLayoutManager().onSaveInstanceState());
+        if(mBinding.recyclerViewMoreTrailers.getAdapter() != null && mBinding.recyclerViewMoreTrailers.getAdapter().getItemCount() > 0){
+            outState.putParcelable(BUNDLE_RECYCLER_TRAILERS_LAYOUT, mBinding.recyclerViewMoreTrailers.getLayoutManager().onSaveInstanceState());
+        }
+        if (mBinding.recyclerViewReviews.getAdapter() != null && mBinding.recyclerViewReviews.getAdapter().getItemCount() > 0){
+            outState.putParcelable(BUNDLE_RECYCLER_REVIEWS_LAYOUT, mBinding.recyclerViewReviews.getLayoutManager().onSaveInstanceState());
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId()== android.R.id.home) {
             getActivity().finish();
-            return true;
-        }else if(item.getItemId() == R.id.sort_by_popular_movies){
-            startActivity(new Intent(getActivity(),SettingsActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -80,7 +86,8 @@ public class DetailActivityFragment extends Fragment{
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://www.youtube.com/watch?v=" + mMovie.getTrailers().get(0).getKey());
+        shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.check_trailer_share) +" "+ mMovie.getTitle() +
+                " https://www.youtube.com/watch?v=" + mMovie.getTrailers().get(0).getKey());
         setShareIntent(shareIntent);
     }
 
@@ -91,86 +98,97 @@ public class DetailActivityFragment extends Fragment{
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         mBinding = DataBindingUtil.inflate(inflater, R.layout.movie_detail_fragment, container, false);
         View rootView = mBinding.getRoot();
-        setHasOptionsMenu(true);
+        Bundle args = getArguments();
+        if(args != null){
+            mMovie = Parcels.unwrap(args.getParcelable("movie"));
+            setHasOptionsMenu(true);
 
-        mMovie = Parcels.unwrap(getActivity().getIntent().getExtras().getParcelable("movie"));
-        mCollapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
-        mCollapsingToolbarLayout.setTitle(mMovie.title);
-
-        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        final ImageView posterImageView = mBinding.posterDetail;
-        Picasso.with(getActivity()).load("http://image.tmdb.org/t/p/w780"+mMovie.getPosterPath()).into(posterImageView);
-        Log.d(LOG_DETAIL_FRAGMENT, "http://image.tmdb.org/t/p/w780"+mMovie.getPosterPath());
-
-        mBinding.textViewMovieTitle.setText(mMovie.getTitle());
-        mBinding.descriptionDetail.setText(mMovie.overview);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(mMovie.getTitle());
-        mBinding.userRatingDetail.setText(mMovie.voteAverage.toString());
-        mBinding.releaseDate.setText(mMovie.getReleaseDate());
-
-        Picasso.with(getActivity()).load("http://image.tmdb.org/t/p/w1280"+mMovie.getBackdropPath()).into(mBinding.movieCover);
-        Log.d(LOG_DETAIL_FRAGMENT, mMovie.getBackdropPath() );
-
-        if(mMovie.getTrailers().size() > 0){
-            TrailerAdapter trailerAdapter = new TrailerAdapter(mMovie.getTrailers(), getActivity());
-            LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-            mBinding.recyclerViewMoreTrailers.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.HORIZONTAL));
-            mBinding.recyclerViewMoreTrailers.setLayoutManager(horizontalLayoutManager);
-            mBinding.recyclerViewMoreTrailers.setAdapter(trailerAdapter);
-        }else{
-            mBinding.textViewNoAvailableTrailers.setVisibility(View.VISIBLE);
-        }
-
-        if(mMovie.getReviews().size() > 0){
-            ReviewAdapter reviewAdapter = new ReviewAdapter(mMovie.getReviews(), getActivity());
-            LinearLayoutManager reviewLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-            mBinding.recyclerViewReviews.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-            mBinding.recyclerViewReviews.setLayoutManager(reviewLayoutManager);
-            mBinding.recyclerViewReviews.setAdapter(reviewAdapter);
-        }else{
-            mBinding.textViewNoAvailableReviews.setVisibility(View.VISIBLE);
-        }
+            if(!getResources().getBoolean(R.bool.twoPaneMode)){
+                mCollapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
+                mCollapsingToolbarLayout.setTitle(mMovie.title);
+                Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+                ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }
 
 
-        //final FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.floatingActionButton);
+            final ImageView posterImageView = mBinding.posterDetail;
+            Picasso.with(getActivity()).load("http://image.tmdb.org/t/p/w780"+mMovie.getPosterPath()).into(posterImageView);
+            Log.d(LOG_DETAIL_FRAGMENT, "http://image.tmdb.org/t/p/w780"+mMovie.getPosterPath());
 
-        if(mMovie.getFavoriteMovie() == 0) mBinding.floatingActionButton.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-        mBinding.floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mMovie.getFavoriteMovie() == 0){
-                    mMovie.setFavoriteMovie(1);
-                    mBinding.floatingActionButton.setImageResource(R.drawable.ic_favorite_black_24dp);
-                }else if(mMovie.getFavoriteMovie() == 1){
-                    mMovie.setFavoriteMovie(0);
-                    mBinding.floatingActionButton.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+            mBinding.textViewMovieTitle.setText(mMovie.getTitle());
+            mBinding.descriptionDetail.setText(mMovie.overview);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(mMovie.getTitle());
+            mBinding.userRatingDetail.setText(mMovie.voteAverage.toString());
+            mBinding.releaseDate.setText(mMovie.getReleaseDate());
+
+            Picasso.with(getActivity()).load("http://image.tmdb.org/t/p/w1280"+mMovie.getBackdropPath()).into(mBinding.movieCover);
+            Log.d(LOG_DETAIL_FRAGMENT, mMovie.getBackdropPath() );
+
+            if(mMovie.getTrailers().size() > 0){
+                TrailerAdapter trailerAdapter = new TrailerAdapter(mMovie.getTrailers(), getActivity());
+                LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+                mBinding.recyclerViewMoreTrailers.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.HORIZONTAL));
+                mBinding.recyclerViewMoreTrailers.setLayoutManager(horizontalLayoutManager);
+                mBinding.recyclerViewMoreTrailers.setAdapter(trailerAdapter);
+            }else{
+                mBinding.textViewNoAvailableTrailers.setVisibility(View.VISIBLE);
+            }
+
+            if(mMovie.getReviews().size() > 0){
+                ReviewAdapter reviewAdapter = new ReviewAdapter(mMovie.getReviews(), getActivity());
+                LinearLayoutManager reviewLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+                mBinding.recyclerViewReviews.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+                mBinding.recyclerViewReviews.setLayoutManager(reviewLayoutManager);
+                mBinding.recyclerViewReviews.setAdapter(reviewAdapter);
+            }else{
+                mBinding.textViewNoAvailableReviews.setVisibility(View.VISIBLE);
+            }
+
+            if(mMovie.getFavoriteMovie() == 0) mBinding.floatingActionButton.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+            mBinding.floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PopularMoviesFragment.setFabPressed(true);
+                    if(mMovie.getFavoriteMovie() == 0){
+                        mMovie.setFavoriteMovie(1);
+                        mBinding.floatingActionButton.setImageResource(R.drawable.ic_favorite_black_24dp);
+                    }else if(mMovie.getFavoriteMovie() == 1){
+                        mMovie.setFavoriteMovie(0);
+                        mBinding.floatingActionButton.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                    }
+                    SQLite.update(Movie.class)
+                            .set(Movie_Table.favoriteMovie.eq(mMovie.getFavoriteMovie()))
+                            .where(Movie_Table.id.is(mMovie.getId()))
+                            .execute();
+                    getActivity().getContentResolver().notifyChange(Database.MovieProviderModel.CONTENT_URI,  null);
                 }
-                SQLite.update(Movie.class)
-                        .set(Movie_Table.favoriteMovie.eq(mMovie.getFavoriteMovie()))
-                        .where(Movie_Table.id.is(mMovie.getId()))
-                        .execute();
-                getActivity().getContentResolver().notifyChange(Database.MovieProviderModel.CONTENT_URI,  null);
-            }
-        });
+            });
 
-        if(savedInstanceState != null){
-            try {
-                Parcelable savedRecyclerTrailersLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_TRAILERS_LAYOUT);
-                mBinding.recyclerViewMoreTrailers.getLayoutManager().onRestoreInstanceState(savedRecyclerTrailersLayoutState);
+            if(savedInstanceState != null){
+                try {
+                    Parcelable savedRecyclerTrailersLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_TRAILERS_LAYOUT);
+                    Parcelable savedRecyclerReviewsLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_REVIEWS_LAYOUT);
+                    mBinding.recyclerViewMoreTrailers.getLayoutManager().onRestoreInstanceState(savedRecyclerTrailersLayoutState);
+                    mBinding.recyclerViewReviews.getLayoutManager().onRestoreInstanceState(savedRecyclerReviewsLayoutState);
 
-            }catch (Exception ex){
-                Log.e(LOG_DETAIL_FRAGMENT, ex.toString());
+                }catch (Exception ex){
+                    Log.e(LOG_DETAIL_FRAGMENT, ex.toString());
+                }
             }
         }
-
         return rootView;
     }
+
+
 }
