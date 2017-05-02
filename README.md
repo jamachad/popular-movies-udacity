@@ -16,6 +16,6 @@ Necessary API keys are:
 The app is available on the Playstore, give it a try and give some ratings.
 
 ### Screenshots
-![Home](https://lh5.googleusercontent.com/LJDd7YIUCi9ucAfprzRreYm3Q10Pt892QkjplLPRHtVScUbWZzseNL4BA7QXDA4nZUWv-NkVImUGcG4=w2560-h1174)
+<img src="https://lh5.googleusercontent.com/LJDd7YIUCi9ucAfprzRreYm3Q10Pt892QkjplLPRHtVScUbWZzseNL4BA7QXDA4nZUWv-NkVImUGcG4=w2560-h1174" height="760" width="480">
 
-![Movie Details](https://lh4.googleusercontent.com/SHyDLcId0KahZAlF3lOE9Xuh1j94eKBPw3Sf454i_anSSNrSOeQ-tDOrE_74LljjNPSGmVWhg2acbwg=w2560-h1174)
+
