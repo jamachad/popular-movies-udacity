@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="pref_popular_label_order" translatable="true">Filmes populares</string>
+    <string name="pref_toprated_label_order" translatable="true">Melhores Filmes</string>
+
+    <string name="reviews" translatable="true">Análises</string>
+    <string name="rating_star" translatable="true">Avaliação</string>
+    <string name="movie_poster" translatable="true">Poster do filme</string>
+    <string name="movie_cover" translatable="true">Capa do filme</string>
+    <string name="rating" translatable="true">Avaliação</string>
+    <string name="check_more" translatable="true">Saber mais</string>
+
+    <string name="pref_favorites_order_label" translatable="true">Meus favoritos</string>
+    <string name="no_internet" translatable="true">Ligação à internet não disponível.</string>
+
+    <string name="check_trailer_share" translatable="true">Olá! Vê este trailer do filme </string>
+</resources>

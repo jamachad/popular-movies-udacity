@@ -2,6 +2,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.udacity.android.popularmovies.DetailActivity">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+<!--    <item android:id="@+id/action_settings" android:title="@string/action_settings"
+        android:orderInCategory="100" app:showAsAction="never" />-->
+    <item android:id="@+id/sort_recycler_view" android:title="@string/pref_listType_label" app:showAsAction="always"
+        android:icon="@drawable/ic_sort_black_24dp">
+        <menu>
+            <item android:id="@+id/sort_by_popular_movies" android:title="@string/pref_popular_label_order"/>
+            <item android:id="@+id/sort_by_toprated_movies" android:title="@string/pref_toprated_label_order" />
+            <item android:id="@+id/sort_by_favorites" android:title="@string/pref_favorites_order_label"/>
+        </menu>
+    </item>
 </menu>

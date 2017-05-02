@@ -1,4 +1,4 @@
-package com.udacity.android.popularmovies.data;
+package com.udacity.android.popularmovies.model;
 
 import android.net.Uri;
 
@@ -35,6 +35,26 @@ public class Database {
         public static final String ENDPOINT = "Movie";
 
         @ContentUri(path = MovieProviderModel.ENDPOINT,
+                type = ContentUri.ContentType.VND_MULTIPLE + ENDPOINT)
+        public static final Uri CONTENT_URI = buildUri(ENDPOINT);
+    }
+
+    @TableEndpoint(name = ReviewProviderModel.ENDPOINT, contentProvider = Database.class)
+    public static class ReviewProviderModel {
+
+        public static final String ENDPOINT = "Review";
+
+        @ContentUri(path = ReviewProviderModel.ENDPOINT,
+                type = ContentUri.ContentType.VND_MULTIPLE + ENDPOINT)
+        public static final Uri CONTENT_URI = buildUri(ENDPOINT);
+    }
+
+    @TableEndpoint(name = TrailerProviderModel.ENDPOINT, contentProvider = Database.class)
+    public static class TrailerProviderModel {
+
+        public static final String ENDPOINT = "Trailer";
+
+        @ContentUri(path = TrailerProviderModel.ENDPOINT,
                 type = ContentUri.ContentType.VND_MULTIPLE + ENDPOINT)
         public static final Uri CONTENT_URI = buildUri(ENDPOINT);
     }

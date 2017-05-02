@@ -1,8 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/moviePoster"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view_popular_movies"
     android:layout_width="match_parent"
-    android:layout_height="250dp"
-    android:scaleType="centerCrop" />
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_margin="2dp"
+    card_view:cardCornerRadius="4dp"
+    card_view:cardElevation="2dp"
+    card_view:contentPadding="1dp">
 
+    <RelativeLayout
+        android:id="@+id/grid_item_relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/moviePoster"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:contentDescription="@string/movie_poster"
+            android:scaleType="fitXY"
+            android:transitionName="moviePosterTransition" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/moviePoster"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/movie_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="center_vertical|center_horizontal"
+                android:maxLines="2"
+                android:minLines="1"
+                android:paddingTop="8dp"
+                android:text="Movie Title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="2dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/movie_vote_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:drawableEnd="@drawable/ic_stars_black_18px"
+                    android:drawablePadding="4dp"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:paddingBottom="8dp"
+                    android:text="Rating: 6.9"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    android:visibility="visible" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
