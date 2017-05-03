@@ -9,8 +9,15 @@ Necessary API keys are:
 
 ### Reviews from Udacity 
 
-* [Part 1 - Review](https://review.udacity.com/#!/reviews/368554/shared)
-* [Part 2 - Review](https://review.udacity.com/#!/reviews/475305/shared)
+* [Part 1 - Review](https://review.udacity.com/#!/reviews/368554/shared)<br />
+In my perspective, you have done a perfect job implementing popular movie stage 1 and the format of your codes is extremely standard and your codes are easy to be understood. Great job foryour popular movie stage 1! Hope to see your stage 2 codes soon! :)
+
+
+* [Part 2 - Review](https://review.udacity.com/#!/reviews/475305/shared)<br />
+  Hurray.... :tada: congrats :clap: please give yourself pat on the back for not giving up and creating this remarkable masterpiece. sometimes working with content providers and managing app state can be a very challenging, especially when there are so many files to manage and code on, you have successfully conquered this. :clap: :smile:
+An excellent example of beauty and functionality, keep it up I've left few suggestions to improve else you have done a superb job in designing and coding. :clap: I'm impressed.
+Thanks for the note it helped. setup easily.
+
 
 ### Playstore App
 The app is available on the Playstore, give it a try and give some ratings.
