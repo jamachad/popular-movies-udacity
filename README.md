@@ -20,7 +20,7 @@ Thanks for the note it helped. setup easily.
 
 
 ### Playstore App
-The app is available on the Playstore, give it a try and give some ratings.
+The app [Popular Movies](https://play.google.com/store/apps/details?id=com.udacity.android.popularmovies) is available on the Playstore, give it a try and in the end leave your ratings.
 
 ### Screenshots
 [![Screenshot_20170427-120434.png](https://s12.postimg.org/i9lh37mt9/Screenshot_20170427-120434.png)](https://postimg.org/image/mvhlbk8c9/)
